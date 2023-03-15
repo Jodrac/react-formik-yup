@@ -6,7 +6,7 @@ const Navbar = () => {
   return (
     <>
       <nav>
-        <NavLink to="/">Home</NavLink> ||
+        <NavLink to="/">Login</NavLink> ||
         {user && (
           <>
             <NavLink to="/dashboard">Dashboard</NavLink>
