@@ -1,8 +1,14 @@
 import { login } from "../config/firebase";
 import { useUserContext } from "../context/UserContext";
 import { userRedirectActiveUser } from "../hooks/useRedirectActiveUser";
+
 import { Formik } from "formik";
 import * as Yup from "yup";
+
+import { Avatar, Box, Button, TextField, Typography } from "@mui/material";
+import ApiIcon from "@mui/icons-material/Api";
+import { LoadingButton } from "@mui/lab";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const { user } = useUserContext();
@@ -12,7 +18,6 @@ const Login = () => {
     { email, password },
     { setSubmitting, setErrors, resetForm }
   ) => {
-    console.log(email, password);
     try {
       await login({ email, password });
       resetForm();
@@ -24,7 +29,7 @@ const Login = () => {
         setErrors({ password: "Contraseña incorrecta" });
       }
     } finally {
-      setSubmitting(flase);
+      setSubmitting(false);
     }
   };
 
@@ -33,12 +38,20 @@ const Login = () => {
       .trim()
       .email("Email no válido")
       .required("Email requerido"),
-    password: Yup.string().trim().min(6, "Mínimo 6 carácteres").required(),
+    password: Yup.string()
+      .trim()
+      .min(6, "Mínimo 6 carácteres")
+      .required("Contraseña requerida"),
   });
 
   return (
-    <>
-      <h1>Login</h1>
+    <Box sx={{ mt: 8, maxWidth: "400px", mx: "auto", textAlign: "center" }}>
+      <Avatar sx={{ mx: "auto", bgcolor: "#111" }}>
+        <ApiIcon></ApiIcon>
+      </Avatar>
+      <Typography variant="h5" component="h1">
+        Login
+      </Typography>
       <Formik
         initialValues={{ email: "", password: "" }}
         onSubmit={onSubmit}
@@ -53,34 +66,61 @@ const Login = () => {
           handleBlur,
           isSubmitting,
         }) => (
-          <form onSubmit={handleSubmit}>
-            <input
+          <Box onSubmit={handleSubmit} sx={{ mt: 1 }} component="form">
+            <TextField
               type="text"
-              placeholder="Ingrese email"
+              placeholder="email@example.com"
               value={values.email}
               onChange={handleChange}
               name="email"
               onBlur={handleBlur}
-            />
-            {errors.email && touched.email && errors.email}
-            <br />
-            <input
+              id="email"
+              label="Ingrese Email"
+              fullWidth
+              sx={{ mb: 3 }}
+              error={errors.email && touched.email}
+              helperText={errors.email && touched.email && errors.email}
+            ></TextField>
+
+            <TextField
               type="password"
-              placeholder="Ingrese contraseña"
+              placeholder="123123"
               value={values.password}
               onChange={handleChange}
               name="password"
               onBlur={handleBlur}
-            />
-            {errors.password && touched.password && errors.password}
-            <br />
-            <button type="submit" disabled={isSubmitting}>
-              Login
-            </button>
-          </form>
+              id="password"
+              label="Ingrese Contraseña"
+              fullWidth
+              sx={{ mb: 3 }}
+              error={errors.password && touched.password}
+              helperText={
+                errors.password && touched.password && errors.password
+              }
+            ></TextField>
+            <LoadingButton
+              type="submit"
+              disabled={isSubmitting}
+              loading={isSubmitting}
+              variant="contained"
+              sx={{ mb: 3 }}
+              fullWidth
+            >
+              LogIn
+            </LoadingButton>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              fullWidth
+              component={Link}
+              to="/register"
+            >
+              ¿No tienes cuenta? Registrate
+            </Button>
+          </Box>
         )}
       </Formik>
-    </>
+    </Box>
   );
 };
 
